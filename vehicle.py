@@ -1,17 +1,40 @@
 import pygame as pg
+from numpy import random
+# rng = random.normal(scale=5.0)
+rng = random.default_rng()
+mass_to_size_constant = 10
+circle_width = 1
 
 
 class Vehicle(pg.sprite.Sprite):
     # default image is a li'l white triangle
-    image = pg.Surface((10, 10), pg.SRCALPHA)
-    pg.draw.polygon(image, pg.Color('white'),
-                    [(15, 5), (0, 2), (0, 8)])
+    # image = pg.Surface((10, 10), pg.SRCALPHA)
+    image = pg.Surface((100, 100), pg.SRCALPHA)
+    pg.draw.circle(image, pg.Color("White"),
+            (50,50), 50)
+    # pg.draw.polygon(image, pg.Color('white'),
+                    # [(15, 5), (0, 2), (0, 8)])
 
     def __init__(self, position, velocity, min_speed, max_speed,
                  max_force, can_wrap):
 
-        super().__init__()
+        self.mass = max(rng.normal(scale=.05, loc=.1), 0.001)
 
+        # self.size_mod = int(pow(self.mass, .5)) * 10
+        # self.radius = self.size_mod / 2
+        self.radius = pow(self.mass, 0.5) * mass_to_size_constant
+        # print(size_mod)
+        print(f"Center: {(int(self.radius), int(self.radius))}, mass {self.mass}")
+        self.image = pg.Surface((self.radius * 2, self.radius * 2), pg.SRCALPHA)
+        print(self.image)
+        pg.draw.circle(
+            surface = self.image,
+            color = pg.Color("White"),
+            center = (int(self.radius), int(self.radius)),
+            radius = self.radius,
+            width = circle_width)
+        # self.image = pg.transform.scale(Vehicle.image, (self.size_mod, self.size_mod))
+        super().__init__()
         # set limits
         self.min_speed = min_speed
         self.max_speed = max_speed
@@ -33,6 +56,8 @@ class Vehicle(pg.sprite.Sprite):
         self.heading = 0.0
 
         self.rect = self.image.get_rect(center=self.position)
+        # self.debug = True
+        self.delete = False
 
     def update(self, dt, steering):
         self.acceleration = steering * dt
@@ -66,7 +91,8 @@ class Vehicle(pg.sprite.Sprite):
             self.wrap()
 
         # draw
-        self.image = pg.transform.rotate(Vehicle.image, -self.heading)
+        # self.image = pg.transform.rotate(Vehicle.image, -self.heading)
+        # self.image = pg.transform.scale(self.image, (self.size_mod, self.size_mod))
 
         if self.debug:
             center = pg.Vector2((50, 50))

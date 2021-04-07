@@ -9,7 +9,7 @@ from pygame.locals import *
 # Import local modules
 from boid import Boid
 
-default_boids = 100
+default_boids = 20
 default_geometry = "1000x1000"
 
 
@@ -83,6 +83,13 @@ def update(dt, boids):
 
     for b in boids:
         b.update(dt, boids)
+    # remaining_boids = []
+    # dead_boids = []
+    # for b in boids:
+    #     if boid.delete:
+    #         dead_boids
+
+    boids = [boid for boid in boids if not boid.delete]
 
 
 def draw(screen, background, boids):
@@ -144,7 +151,7 @@ if __name__ == "__main__":
     parser.add_argument('--geometry', metavar='WxH', type=str,
                         default=default_geometry, help='geometry of window')
     parser.add_argument('--number', dest='num_boids', default=default_boids,
-                        help='number of boids to generate')
+                        help='number of boids to generate', type=int)
     args = parser.parse_args()
 
     main(args)
